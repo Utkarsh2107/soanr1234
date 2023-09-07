@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven tool'
+    }
+    stages {
+        stage("Git Checkout") {
+            steps {
+                git branch:'main', url: 'https://github.com/Utkarsh2107/soanr1234.git'
+            }
+        }
+        stage("Maven Build") {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+        stage("Archive Artifact") {
+            steps {
+                archiveArtifacts '**/*.jar'
+            }
+        }
+                
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+    }
+}
